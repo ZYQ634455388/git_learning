@@ -1,7 +1,10 @@
 /*
 操作对象为一24C02
 */
-//#include "includes.h"
+//#include "includes.h
+// refer  01
+
+"
 #include "stm32f10x.h"
 #include "i2c_ee.h"
 #include "string.h"
