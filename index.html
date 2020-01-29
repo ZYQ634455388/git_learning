@@ -1,0 +1,121 @@
+/*****************************************************************************************/
+/******************************20110815 by SYL KEY****************************************/
+// test 01 
+
+
+
+
+#include "stm32f10x.h"
+#include "USART.h"
+#include "string.h"
+
+#define key_debug
+
+void Key_Config(void)
+{
+	GPIO_InitTypeDef  GPIO_InitStructure; 
+//	RCC_APB2PeriphClockCmd( RCC_APB2Periph_GPIOB, ENABLE );
+	RCC_APB2PeriphClockCmd( RCC_APB2Periph_GPIOC , ENABLE );
+
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_7 | GPIO_Pin_12 | GPIO_Pin_13 ;
+  	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+  	GPIO_Init(GPIOC, &GPIO_InitStructure);
+
+   	RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO | RCC_APB2Periph_GPIOB , ENABLE);
+    GPIO_PinRemapConfig(GPIO_Remap_SWJ_JTAGDisable,ENABLE);
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3 | GPIO_Pin_4  ;
+  	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+  	GPIO_Init(GPIOB, &GPIO_InitStructure);
+
+   	
+
+}
+u8 Key_val_c13 (void)
+{	 
+	u16 val = 0 ;
+	val = GPIOC->IDR;
+	val = ( val>> 13) &0x1;
+	return (u8)val;
+}
+/* 返回 0时 PB3 PB4 全接通 返回 1时 PB4接通K2 返回 2 PB3通 K1 */
+static u16 Key_val_b (void)
+{	 
+	u16 val = 0 ;
+	val = GPIOB->IDR;
+	val = ( val>> 3) &0x3;
+	return val;
+}
+/* 返回 0时 PC6 PC7 全接通 返回 1时 PC7接通K4 返回 2 PC6通K3 */
+static u16 Key_val_c1 (void)
+{	 
+	u16 val = 0 ;
+	val = GPIOC->IDR;
+	val = ( val>> 6) &0x3;
+	return val;
+}
+
+/* 返回 0时 PC12 PC13 全接通 返回 1时 PC3接通K6 返回 2 PC2通K5 */
+static u16 Key_val_c2 (void)
+{	 
+	u16 val = 0 ;
+	val = GPIOC->IDR;
+	val = ( val>> 12) &0x3;
+	return val;
+}
+
+void KeyVal(void)
+{
+u16 val =0;
+	val = Key_val_b();
+
+	switch(val)
+	{	
+#ifdef key_debug
+		case 0:
+		  	UART4Write("K1 and K2 down!\n\r",strlen("K1 and K2 down!\n\r"));
+		break ;
+	   	case 1:
+		  	UART4Write("K2 down!\n\r",strlen("K2 down!\n\r"));
+		break ;
+		case 2:
+		  	UART4Write("K1 down!\n\r",strlen("K1 down!\n\r"));
+		break ;
+#endif	
+		default: break;
+	}
+
+	val = Key_val_c2();
+	switch(val)
+	{
+#ifdef key_debug
+		case 0:
+		  	UART4Write("K5 and K6 down!\n\r",strlen("K5 and K6 down!\n\r"));
+		break ;
+	   	case 1:
+		  	UART4Write("K6 down!\n\r",strlen("K6 down!\n\r"));
+		break ;
+		case 2:
+		  	UART4Write("K5 down!\n\r",strlen("K5 down!\n\r"));
+		break ;
+#endif
+		default: break;
+	}
+    val = Key_val_c1();
+	switch(val)
+	{
+#ifdef key_debug
+		case 0:
+		  	UART4Write("K3 and K4 down!\n\r",strlen("K3 and K4 down!\n\r"));
+		break ;
+	   	case 1:
+		  	UART4Write("K4 down!\n\r",strlen("K4 down!\n\r"));
+		break ;
+		case 2:
+		  	UART4Write("K3 down!\n\r",strlen("K3 down!\n\r"));
+		break ;
+#endif
+		default: break;
+	}
+
+}
+
