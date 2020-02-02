@@ -1,6 +1,11 @@
 /*
 操作对象为一24C02
 */
+
+other people write something 
+hello world
+
+
 //#include "includes.h"
 #include "stm32f10x.h"
 #include "i2c_ee.h"
